@@ -110,8 +110,8 @@ namespace kuka_lwr_controllers
 			{
 				joint_handles_[i].setCommandPosition(joint_handles_[i].getPosition());
 			
-				//torque = (Kp_(i)*(q_des_(i)-joint_handles_[i].getPosition()))+(Kd_(i)*(-joint_handles_[i].getVelocity()));
-				torque = 0.0;
+				torque = (Kp_(i)*(q_des_(i)-joint_handles_[i].getPosition()))+(Kd_(i)*(-joint_handles_[i].getVelocity()));
+				
 				
 				joint_handles_[i].setCommandTorque(torque); // Set a value of torque to 0.0 for each joint.
 				joint_handles_[i].setCommandStiffness(stiffness_(i));
