@@ -6,7 +6,7 @@
 
 do_start()
 {
-	cd /home/kuka/git_project/platform-kuka-ip-real
+	cd //home/kuka/git_project/platform-kuka-ip-real
 	source devel/setup.bash
 	if [ $1 = "left" ]
 	then
@@ -14,7 +14,7 @@ do_start()
 	else
 		namespace="kuka_lwr_right"
 	fi
-	rosservice call /$namespace/controller_manager/switch_controller "{start_controllers: ['kuka_gravity_compensation_controller'], stop_controllers: [], strictness: 2}"
+	rosservice call /$namespace/controller_manager/switch_controller "{start_controllers: ['kuka_one_task_inverse_kinematics'], stop_controllers: [], strictness: 2}"
 }
 
 do_stop()
@@ -27,7 +27,7 @@ do_stop()
 	else
 		namespace="kuka_lwr_right"
 	fi
-	rosservice call /$namespace/controller_manager/switch_controller "{start_controllers: [], stop_controllers: ['kuka_gravity_compensation_controller'], strictness: 1}"
+	rosservice call /$namespace/controller_manager/switch_controller "{start_controllers: [], stop_controllers: ['kuka_one_task_inverse_kinematics'], strictness: 1}"
 }
 
 case "$1" in
