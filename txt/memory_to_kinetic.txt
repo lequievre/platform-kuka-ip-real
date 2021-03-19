@@ -1,0 +1,14 @@
+To use QWT widgets (based on QT5) with Kinetic, we need to install ubuntu 16.04 packages :
+
+libqwt-headers
+libqwt-qt5-6
+libqwt-qt5-dev
+ros-kinetic-qwt-dependency
+
+To use ROS Control with kinetic, we need to install ubuntu 16.04 packages :
+
+ros-kinetic-ros-control
+ros-kinetic-ros-controllers
+ros-kinetic-gazebo-ros-control
+ros-kinetic-moveit-ros-control-interface
+
