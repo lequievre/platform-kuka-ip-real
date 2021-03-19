@@ -18,6 +18,14 @@
 // Ros messages generated
 #include <kuka_lwr_controllers/PoseRPY.h>
 
+// realtime tools
+#include <realtime_tools/realtime_buffer.h>
+#include <realtime_tools/realtime_publisher.h>
+
+#include <geometry_msgs/Pose.h>
+#include <kdl_conversions/kdl_msg.h>
+
+
 namespace kuka_lwr_controllers
 {
 	class OneTaskInverseKinematics: 
@@ -33,6 +41,9 @@ namespace kuka_lwr_controllers
 			void command(const kuka_lwr_controllers::PoseRPY::ConstPtr &msg);
 
 		private:
+		
+		    std::shared_ptr<realtime_tools::RealtimePublisher<geometry_msgs::Pose> > realtime_x_pub_; // real time publisher to publish current cartesian position and orientation
+		    
 			ros::Subscriber sub_command_;
 			ros::Subscriber sub_gains_;
 

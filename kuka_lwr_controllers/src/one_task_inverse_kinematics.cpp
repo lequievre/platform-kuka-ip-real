@@ -48,6 +48,9 @@ namespace kuka_lwr_controllers
 
         sub_command_ = nh_.subscribe("command", 1, &OneTaskInverseKinematics::command, this);
         
+        // current cartesian publisher
+		realtime_x_pub_.reset(new realtime_tools::RealtimePublisher<geometry_msgs::Pose>(n, "current_x", 4));
+        
         ROS_INFO("***** FINISH OneTaskInverseKinematics::init ************");
 
         return true;
@@ -104,7 +107,7 @@ namespace kuka_lwr_controllers
             {
                 joint_des_states_.qdot(i) = 0.0;
                 for (int k = 0; k < J_pinv_.cols(); k++)
-                    joint_des_states_.qdot(i) += 0.07*J_pinv_(i,k)*x_err_(k); //removed scaling factor of .7
+                    joint_des_states_.qdot(i) += 0.3*J_pinv_(i,k)*x_err_(k); //removed scaling factor of .7
           
             }
 
@@ -121,7 +124,7 @@ namespace kuka_lwr_controllers
                     joint_des_states_.q(i) = joint_limits_.max(i);
             }
 
-            if (Equal(x_, x_des_, 0.015))
+            if (Equal(x_, x_des_, 0.005))
             {
                 ROS_INFO("On target");
                 cmd_flag_ = 0;
@@ -140,6 +143,13 @@ namespace kuka_lwr_controllers
             {
                joint_handles_[i].setCommand(joint_des_states_.q(i));
             }
+            
+           // publish estimated cartesian pose
+		   if (realtime_x_pub_->trylock()){
+			  tf::poseKDLToMsg(x_,realtime_x_pub_->msg_);
+			  realtime_x_pub_->unlockAndPublish();
+		   }
+
 
         }
         
