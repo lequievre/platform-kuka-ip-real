@@ -77,5 +77,11 @@
 			Info...
 		</description>
 	</class> 
+	
+	<class name="kuka_lwr_controllers/JointPositionController" type="kuka_lwr_controllers::JointPositionController" base_class_type="controller_interface::ControllerBase">
+		<description>
+			Info...
+		</description>
+	</class> 
 
 </library>

@@ -91,11 +91,15 @@ add_library(${PROJECT_NAME}_pid
   src/pid/pid.cpp
 )
 
+add_library(${PROJECT_NAME}_robot_motion_generation
+  src/robot_motion_generation/CDDynamics.cpp
+)
 
 
 # The add_library() CMake function is used to specify libraries to build. By default catkin builds shared libraries.
 add_library(${PROJECT_NAME}
   src/group_command_controller_fri.cpp
+  src/joint_position_controller.cpp
   src/gravity_compensation_controller.cpp
   src/simple_cartesian_impedance_controller.cpp
   src/one_task_inverse_kinematics.cpp
@@ -110,7 +114,7 @@ add_library(${PROJECT_NAME}
 )
 
 # Link a target to given libraries.
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} TypeIRML ReflexxesTypeII ${PROJECT_NAME}_pid)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} TypeIRML ReflexxesTypeII ${PROJECT_NAME}_pid ${PROJECT_NAME}_robot_motion_generation)
 
  
 # Add a dependencies of generation message, to be sure that all headers files of all messages are generated before !
