@@ -67,57 +67,7 @@ target_link_libraries(${PROJECT_NAME}
 include(ExternalProject)
 
 
-# Reflexxes type 2 library ----------------------------------------------------------------
 
-message(WARNING "ATTENTION: This project supports the fork of the reflexxes type 2 motion library in https://github.com/lequievre/reflexxes_type2, and install the libraries in your catkin workspace, not in the system")
-
-set(RML_HEADER_DIR "${CMAKE_BINARY_DIR}/${PROJECT_NAME}/reflexxes-prefix/src/reflexxes/include/")
-set(RML_RELEASE_SHARED_LIBRARY_DIR "${CMAKE_BINARY_DIR}/${PROJECT_NAME}/reflexxes-prefix/src/reflexxes/Linux/x64/release/lib/shared/")
-set(RML_DEBUG_SHARED_LIBRARY_DIR "${CMAKE_BINARY_DIR}/${PROJECT_NAME}/reflexxes-prefix/src/reflexxes/Linux/x64/debug/lib/shared/")
-set(RML_RELEASE_STATIC_LIBRARY_DIR "${CMAKE_BINARY_DIR}/${PROJECT_NAME}/reflexxes-prefix/src/reflexxes/Linux/x64/release/lib/static/")
-set(RML_DEBUG_STATIC_LIBRARY_DIR "${CMAKE_BINARY_DIR}/${PROJECT_NAME}/reflexxes-prefix/src/reflexxes/Linux/x64/debug/lib/static/")
-
-message(STATUS "RML_HEADER_DIR = ${RML_HEADER_DIR}")
-message(STATUS "RML_RELEASE_LIBRARY_DIR = ${RML_RELEASE_LIBRARY_DIR}")
-message(STATUS "RML_DEBUG_LIBRARY_DIR = ${RML_DEBUG_LIBRARY_DIR}")
-message(STATUS "copy dir = ${CATKIN_DEVEL_PREFIX}/include/reflexxes")
-
-
-ExternalProject_Add(
-  reflexxes
-  URL "https://github.com/lequievre/reflexxes_type2/blob/master/ReflexxesTypeII.zip?raw=true"
-  DOWNLOAD_NAME ReflexxesTypeII.zip
-  CONFIGURE_COMMAND ""
-  BINARY_DIR reflexxes-prefix/src/reflexxes/Linux
-  BUILD_COMMAND make clean64 all64
-  INSTALL_COMMAND 
-	${CMAKE_COMMAND} -E copy_directory ${RML_HEADER_DIR} ${CATKIN_DEVEL_PREFIX}/include/reflexxes 
-	COMMAND 
-  	${CMAKE_COMMAND} -E copy ${RML_RELEASE_SHARED_LIBRARY_DIR}/libReflexxesTypeII.so ${CATKIN_DEVEL_PREFIX}/lib/reflexxes/release/shared/libReflexxesTypeII.so
- 	COMMAND
-	${CMAKE_COMMAND} -E copy ${RML_RELEASE_STATIC_LIBRARY_DIR}/libReflexxesTypeII.a ${CATKIN_DEVEL_PREFIX}/lib/reflexxes/release/static/libReflexxesTypeII.a
- 	COMMAND
-	${CMAKE_COMMAND} -E copy ${RML_DEBUG_SHARED_LIBRARY_DIR}/libReflexxesTypeII.so ${CATKIN_DEVEL_PREFIX}/lib/reflexxes/debug/shared/libReflexxesTypeII.so
-	COMMAND
-	${CMAKE_COMMAND} -E copy ${RML_DEBUG_STATIC_LIBRARY_DIR}/libReflexxesTypeII.a ${CATKIN_DEVEL_PREFIX}/lib/reflexxes/debug/static/libReflexxesTypeII.a
-  )
-  
-#ExternalProject_Add_Step(
-#  reflexxes CopyToCatkinDevelDirectory
-#  COMMAND ${CMAKE_COMMAND} -E copy_directory ${RML_HEADER_DIR} ${CATKIN_DEVEL_PREFIX}/include/reflexxes 
-#  COMMAND ${CMAKE_COMMAND} -E copy ${RML_RELEASE_SHARED_LIBRARY_DIR}/libReflexxesTypeII.so ${CATKIN_DEVEL_PREFIX}/lib/reflexxes/release/shared/libReflexxesTypeII.so
-#  COMMAND ${CMAKE_COMMAND} -E copy ${RML_RELEASE_STATIC_LIBRARY_DIR}/libReflexxesTypeII.a ${CATKIN_DEVEL_PREFIX}/lib/reflexxes/release/static/libReflexxesTypeII.a
-#  COMMAND ${CMAKE_COMMAND} -E copy ${RML_DEBUG_SHARED_LIBRARY_DIR}/libReflexxesTypeII.so ${CATKIN_DEVEL_PREFIX}/lib/reflexxes/debug/shared/libReflexxesTypeII.so
-#  COMMAND ${CMAKE_COMMAND} -E copy ${RML_DEBUG_STATIC_LIBRARY_DIR}/libReflexxesTypeII.a ${CATKIN_DEVEL_PREFIX}/lib/reflexxes/debug/static/libReflexxesTypeII.a
-#  DEPENDEES build
-#)  
-
-#INSTALL (
-#    DIRECTORY ${RML_HEADER_DIR}
-#    DESTINATION ${CATKIN_DEVEL_PREFIX}/include/reflexxes
-#    FILES_MATCHING PATTERN "*.h")
-
-# -----------------------------------------------------------------------------------------
 
 # Standford FRILibrary support in PROGRESS ------------------------------------------------
 
@@ -140,7 +90,7 @@ add_definitions(${FRIL_DEFS})
 # ------------------------------------------------------------------------------------------
 
 # lwr hw fril node
-include_directories(${CATKIN_DEVEL_PREFIX}/include/fril ${CATKIN_DEVEL_PREFIX}/include/RML)
+include_directories(${CATKIN_DEVEL_PREFIX}/include/fril )
 link_directories(${CATKIN_DEVEL_PREFIX}/lib)
 add_executable(lwr_hw_fril_node  src/lwr_hw_fril_node.cpp
   include/${PROJECT_NAME}/lwr_hw_fril.hpp
@@ -157,27 +107,5 @@ target_link_libraries(lwr_hw_fril_node
   ${catkin_LIBRARIES}
 )
 
-#target_link_libraries(lwr_hw_fril_node
-#  FastResearchInterfaceLibrary_rt.a
-#  ${PROJECT_NAME}
-#  ${catkin_LIBRARIES}
-#)
-
- #set_target_properties( lwr_hw_fril_node PROPERTIES
- #                    COMPILE_FLAGS "-DRTNET -D_GNU_SOURCE -D_REENTRANT -D__XENO__" 
- #                    LINK_FLAGS "-Wl,@/usr/xenomai_2_6_5/lib/posix.wrappers")
-
-# test fril move node
-#add_executable(test_move_fril_node  src/test_move_fril_node.cpp)
-#target_link_libraries(test_move_fril_node
-#  FastResearchInterfaceLibrary_rt
-#  TypeIRML
-#  ${PROJECT_NAME}
-#  ${catkin_LIBRARIES}
-#)
-
-#set_target_properties( test_move_fril_node PROPERTIES
-#                     COMPILE_FLAGS "-DRTNET -D_GNU_SOURCE -D_REENTRANT -D__XENO__" 
-#                     LINK_FLAGS "-Wl,@/usr/xenomai_2_6_5/lib/posix.wrappers")
 
 

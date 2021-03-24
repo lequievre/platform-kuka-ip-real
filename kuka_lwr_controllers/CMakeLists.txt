@@ -35,10 +35,10 @@ set(FRIL_DEFS -D__LINUX__)
 add_definitions(${FRIL_DEFS} -std=c++11) #The -std=c++11 tells the compiler to consider C++11
 
 # Add the given directories to those the compiler uses to search for include files.
-include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${CATKIN_DEVEL_PREFIX}/include ${CATKIN_DEVEL_PREFIX}/include/fril ${CATKIN_DEVEL_PREFIX}/include/RML  ${CATKIN_DEVEL_PREFIX}/include/reflexxes)
+include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${CATKIN_DEVEL_PREFIX}/include ${CATKIN_DEVEL_PREFIX}/include/fril )
 
 # Specify the paths in which the linker should search for libraries.
-link_directories(${catkin_LIBRARY_DIRS} ${CATKIN_DEVEL_PREFIX}/lib  ${CATKIN_DEVEL_PREFIX}/lib/reflexxes/release/shared)
+link_directories(${catkin_LIBRARY_DIRS} ${CATKIN_DEVEL_PREFIX}/lib  )
 
 # Add messages files defined in the 'msg' folder.
 # il faut ajouter ceci dans le fichier package.xml :
@@ -84,7 +84,7 @@ catkin_package(
     realtime_tools
     #trac_ik_lib
   INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME} TypeIRML ReflexxesTypeII
+  LIBRARIES ${PROJECT_NAME}
 )
 
 add_library(${PROJECT_NAME}_pid
@@ -98,46 +98,22 @@ add_library(${PROJECT_NAME}_robot_motion_generation
 
 # The add_library() CMake function is used to specify libraries to build. By default catkin builds shared libraries.
 add_library(${PROJECT_NAME}
-  src/group_command_controller_fri.cpp
   src/joint_position_controller.cpp
   src/gravity_compensation_controller.cpp
   src/simple_cartesian_impedance_controller.cpp
   src/one_task_inverse_kinematics.cpp
   src/cartesian_velocity_control.cpp
-  src/one_task_inverse_kinematics_fri.cpp
   src/torque_based_position.cpp
-  src/torque_based_position_gazebo.cpp
   src/computed_torque_controller.cpp
-  src/cartesian_computed_torque_controller.cpp
   src/basic_torque_controller.cpp
   src/operational_space_controller.cpp
 )
 
 # Link a target to given libraries.
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} TypeIRML ReflexxesTypeII ${PROJECT_NAME}_pid ${PROJECT_NAME}_robot_motion_generation)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES}  ${PROJECT_NAME}_pid ${PROJECT_NAME}_robot_motion_generation)
 
  
 # Add a dependencies of generation message, to be sure that all headers files of all messages are generated before !
-add_dependencies(kuka_lwr_controllers ${PROJECT_NAME}_generate_messages_cpp  FRILibrary reflexxes)
+add_dependencies(kuka_lwr_controllers ${PROJECT_NAME}_generate_messages_cpp  FRILibrary )
 
 
-add_executable(node_test_irml  src/node_test_irml.cpp)
-
-target_link_libraries(node_test_irml
-  ${catkin_LIBRARIES}
-  TypeIRML ReflexxesTypeII
-)
-
-add_dependencies(node_test_irml reflexxes)
-
-#install(DIRECTORY include/${PROJECT_NAME}/
-#  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
-
-#install(TARGETS ${PROJECT_NAME}
-#  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-#  )
-
-#install(FILES lwr_controllers_plugins.xml
-#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
