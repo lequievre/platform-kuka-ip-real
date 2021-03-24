@@ -130,7 +130,7 @@ namespace platform_sigma_plugins_ns {
 		
 		setupROSComponents_();
 		
-		resetSlidersVelocity();
+		//resetSlidersVelocity();
 		
 		timer_ = new QTimer(this);
 

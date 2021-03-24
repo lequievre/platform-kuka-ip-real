@@ -99,14 +99,18 @@ namespace platform_sigma_plugins_ns {
 		QAction* action_start;
 		QAction* action_stop;
 		
+		int typeOfAction = 0; // 1 = start, 2 = stop
+		
 		if (state == "running")
 		{
 			action_stop = menu.addAction(icon_stop,"Stop Controller");
+			typeOfAction = 2;
 		}
 		else
-		if (state == "stopped")
+		if (state == "stopped" || state == "initialized")
 		{
 			action_start = menu.addAction(icon_start,"Start Controller");
+			typeOfAction = 1;
 		}
 		
 		QAction* action_menu_selected = menu.exec(tree_controllers_widget_->mapToGlobal(aPoint));
@@ -114,7 +118,7 @@ namespace platform_sigma_plugins_ns {
 		if (action_menu_selected != NULL)
 		{
 		
-			if (action_menu_selected->text() == action_start->text())
+			if (typeOfAction == 1)
 			{
 				#if TRACE_ControllerManagerPlugin_ACTIVATED
 					ROS_INFO("action_start !");
@@ -122,7 +126,7 @@ namespace platform_sigma_plugins_ns {
 				switchController_(name, ActionController::START);
 			}
 			else
-				if (action_menu_selected->text() == action_stop->text())
+				if (typeOfAction == 2)
 				{
 					#if TRACE_ControllerManagerPlugin_ACTIVATED
 						ROS_INFO("action_stop !");

@@ -20,7 +20,7 @@
 #include <QTreeWidget>
 #include <QMap>
 
-#define TRACE_ControllerManagerPlugin_ACTIVATED 0
+#define TRACE_ControllerManagerPlugin_ACTIVATED 1
 
 namespace platform_sigma_plugins_ns {
 	
