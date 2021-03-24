@@ -18,7 +18,7 @@ kuka_lwr_left:
     publish_rate: 100
     
     
-  # Group Command Controller FRI
+  # Joint Position Controller
   joint_position_controller:
     type: kuka_lwr_controllers/JointPositionController
     root_name: kuka_lwr_left_base_link
@@ -120,6 +120,12 @@ kuka_lwr_right:
   joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 100
+    
+  # Joint Position Controller
+  joint_position_controller:
+    type: kuka_lwr_controllers/JointPositionController
+    root_name: kuka_lwr_right_base_link
+    tip_name: kuka_lwr_right_7_link
 
   # Group Command Controller
   kuka_group_command_controller:

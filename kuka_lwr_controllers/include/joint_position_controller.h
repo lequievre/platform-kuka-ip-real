@@ -16,6 +16,9 @@
 
 // msgs Float64MultiArray
 #include <std_msgs/Float64MultiArray.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Pose.h>
+#include <sensor_msgs/JointState.h>
 
 #include <string>
 
@@ -24,6 +27,20 @@
 #include <robot_motion_generation/CDDynamics.h>
 
 #include <boost/scoped_ptr.hpp>
+
+#include <realtime_tools/realtime_publisher.h>
+#include <realtime_tools/realtime_buffer.h>
+
+
+// KDL
+#include <kdl/chainfksolverpos_recursive.hpp>
+#include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainiksolverpos_nr_jl.hpp>
+#include <kdl/chainfksolvervel_recursive.hpp>
+
+#include <kdl_conversions/kdl_msg.h>
+
+
 
 namespace kuka_lwr_controllers
 {
@@ -45,10 +62,21 @@ namespace kuka_lwr_controllers
 			std::string robot_namespace_;
 			int cmd_flag_;  // flag set only to 1 when the controller receive a message to the command topic
 			
-			KDL::JntArray    q_target_;
+			realtime_tools::RealtimeBuffer<KDL::JntArray> q_target_buffer_;
+			KDL::JntArray *q_target_;
+			KDL::JntArray q_target_cmd_;
 			KDL::JntArray q_cmd_; // q desired setting by command topic
 			
 			boost::scoped_ptr<motion::CDDynamics>   joint_cddynamics;
+			
+			
+			std::shared_ptr<realtime_tools::RealtimePublisher<geometry_msgs::Pose> > realtime_x_pub_;
+			std::shared_ptr<realtime_tools::RealtimePublisher<sensor_msgs::JointState> > realtime_state_pub_;
+			
+			// KDL solvers
+			boost::scoped_ptr<KDL::ChainFkSolverPos_recursive> fk_pos_solver_;
+			
+			KDL::Frame x_;		//current pose
     };
 }
 
