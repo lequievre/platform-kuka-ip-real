@@ -16,7 +16,11 @@
 	<param name="fri_driver_file_left" type="str" value="$(find double_lwr_robot)/config/49939-FRI-Driver.init"/>
 	<param name="fri_driver_file_right" type="str" value="$(find double_lwr_robot)/config/49938-FRI-Driver.init"/>
 
+    <!---
 	<arg name="controllers" default="kuka_group_command_controller_fri kuka_gravity_compensation_controller torque_based_position_controller kuka_one_task_inverse_kinematics cartesian_velocity_control cartesian_computed_torque_controller kuka_simple_cartesian_impedance_controller operational_space_controller  joint_position_controller" />
+	-->
+	
+	<arg name="controllers" default="joint_position_controller" />
 	
 	<arg name="use_rviz" default="false"/>
 
