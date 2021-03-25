@@ -40,6 +40,9 @@
 
 #include <kdl_conversions/kdl_msg.h>
 
+// Service GetJointVelocity
+#include <kuka_lwr_controllers/GetJointVelocity.h>
+
 
 
 namespace kuka_lwr_controllers
@@ -58,7 +61,9 @@ namespace kuka_lwr_controllers
 			
 		private:
 			void commandCB(const std_msgs::Float64MultiArrayConstPtr& msg); // function associate to a subscribe command topic
-			ros::Subscriber sub_command_;
+			void setMaxVelocityCB(const std_msgs::Float64MultiArrayConstPtr& msg); // function associate to a subscribe setMaxVelocity topic
+			ros::Subscriber sub_command_, sub_max_velovity_;
+			ros::ServiceServer srv_get_velocity_;
 			std::string robot_namespace_;
 			int cmd_flag_;  // flag set only to 1 when the controller receive a message to the command topic
 			
@@ -77,6 +82,10 @@ namespace kuka_lwr_controllers
 			boost::scoped_ptr<KDL::ChainFkSolverPos_recursive> fk_pos_solver_;
 			
 			KDL::Frame x_;		//current pose
+			
+			std::vector<double> v_max_vel_;
+			
+			bool getCurrentJointVelocity(kuka_lwr_controllers::GetJointVelocity::Request& req, kuka_lwr_controllers::GetJointVelocity::Response& resp);
     };
 }
 

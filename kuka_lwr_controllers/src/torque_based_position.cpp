@@ -65,14 +65,14 @@ namespace kuka_lwr_controllers
 		
 		for (std::size_t i=0; i<joint_handles_.size()-3; i++)
 		{
-			Kp_(i) = 100.0;
-			Kd_(i) = 50.0;
+			Kp_(i) = 10.0;
+			Kd_(i) = 5.0;
 		}
 		
 		for (std::size_t i=4; i<joint_handles_.size(); i++)
 		{
-			Kp_(i) = 50.0;
-			Kd_(i) = 10.0;
+			Kp_(i) = 5.0;
+			Kd_(i) = 1.0;
 		}
 		
 		for (std::size_t i=0; i<joint_handles_.size(); i++)

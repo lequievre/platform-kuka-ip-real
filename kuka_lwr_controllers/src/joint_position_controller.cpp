@@ -30,6 +30,15 @@ namespace kuka_lwr_controllers
         
         
         sub_command_ = nh_.subscribe("command", 1, &JointPositionController::commandCB, this);
+        sub_max_velovity_ = nh_.subscribe("setMaxVelocity", 1, &JointPositionController::setMaxVelocityCB, this);
+        srv_get_velocity_ = n.advertiseService("get_joint_velocity", &JointPositionController::getCurrentJointVelocity, this);
+        
+        v_max_vel_.resize(joint_handles_.size());
+        
+        for (size_t i=0; i<joint_handles_.size(); i++) {
+            v_max_vel_[i] = 0.25;
+         }
+        
         
         realtime_x_pub_.reset(new realtime_tools::RealtimePublisher<geometry_msgs::Pose>(n, "current_x", 4));
         
@@ -58,7 +67,7 @@ namespace kuka_lwr_controllers
        motion::Vector velLimits(joint_handles_.size());
       
        for (std::size_t i = 0; i < joint_handles_.size(); i++){
-           velLimits(i)  = 0.25; // x ms^-1
+           velLimits(i)  = v_max_vel_[i]; // x ms^-1
        }
        
         
@@ -171,6 +180,40 @@ namespace kuka_lwr_controllers
 
 		cmd_flag_ = 1; // set this flag to 1 to run the update method
     }
+    
+    
+    
+    void JointPositionController::setMaxVelocityCB(const std_msgs::Float64MultiArrayConstPtr& msg)
+	{
+		
+		if(msg->data.size()!=joint_handles_.size())
+		{ 
+			ROS_ERROR_STREAM("JointPositionController: Dimension (of robot " << robot_namespace_.c_str() << ") of set max velocity command (" << msg->data.size() << ") does not match number of joints (" << joint_handles_.size() << ")! Not executing!");
+			return; 
+		}
+		
+		for (size_t i=0; i<joint_handles_.size(); ++i)
+		{
+			v_max_vel_[i] = (double)msg->data[i];
+			ROS_INFO("JointPositionController::setMaxVelocityCB Joint[%zu] = %f rad , %f ° !",i, msg->data[i], v_max_vel_[i]);
+		}
+		
+	}
+	
+    
+    bool JointPositionController::getCurrentJointVelocity(kuka_lwr_controllers::GetJointVelocity::Request& req, kuka_lwr_controllers::GetJointVelocity::Response& resp)
+	{
+		
+		resp.arrayVelocities.data.resize(joint_handles_.size());
+		
+		for (size_t i=0; i<joint_handles_.size(); ++i)
+		{
+			resp.arrayVelocities.data[i] = v_max_vel_[i];
+		}
+		
+		return true;
+	}
+	
 
 }
 
