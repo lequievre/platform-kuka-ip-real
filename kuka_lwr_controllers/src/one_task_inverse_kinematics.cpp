@@ -60,6 +60,12 @@ namespace kuka_lwr_controllers
     {
 		ROS_INFO("***** OneTaskInverseKinematics::starting ************");
 		cmd_flag_ = 0;  // set this flag to 0 to not run the update method
+		
+		 for (int i = 0; i < joint_handles_.size(); i++)
+            {
+            
+               joint_des_states_.q(i) = joint_handles_[i].getPosition();
+            }
     }
 
     void OneTaskInverseKinematics::update(const ros::Time& time, const ros::Duration& period)
@@ -113,7 +119,7 @@ namespace kuka_lwr_controllers
 
             // integrating q_dot -> getting q (Euler method)
             for (int i = 0; i < joint_handles_.size(); i++)
-                joint_des_states_.q(i) += period.toSec()*joint_des_states_.qdot(i);
+                joint_des_states_.q(i) += 0.002*joint_des_states_.qdot(i);
 
             // joint limits saturation
             for (int i =0;  i < joint_handles_.size(); i++)
@@ -138,11 +144,7 @@ namespace kuka_lwr_controllers
             ROS_INFO("update rotation desired ->  O = %f, 1 = %f, 2 = %f, 3 = %f, 4 = %f, 5 = %f, 6 = %f, 7 = %f, 8 = %f", x_des_.M.data[0],x_des_.M.data[1],x_des_.M.data[2],x_des_.M.data[3],x_des_.M.data[4],x_des_.M.data[5],x_des_.M.data[6],x_des_.M.data[7],x_des_.M.data[8]);
            */
 
-	    // set controls for joints
-            for (int i = 0; i < joint_handles_.size(); i++)
-            {
-               joint_handles_[i].setCommand(joint_des_states_.q(i));
-            }
+	   
             
            // publish estimated cartesian pose
 		   if (realtime_x_pub_->trylock()){
@@ -153,28 +155,11 @@ namespace kuka_lwr_controllers
 
         }
         
-      /*  for (int i=0; i<joint_handles_.size(); i++)
-        {
-			if (joint_des_states_.q(i)-joint_msr_states_.q(i) > 0.001)
-			{
-				 ROS_INFO("joint n°%d -> limit position !!!",i);
-				 ROS_INFO("joint n°%d -> %f !!!",i,joint_des_states_.q(i)-joint_msr_states_.q(i));
-				 ROS_INFO("joint limit of n°%d -> min = %f, max = %f !!!",i,joint_limits_.min(i), joint_limits_.max(i));
-				 joint_handles_[i].setCommand(joint_msr_states_.q(i)+0.001);
-			 }
-			 else
-				if (joint_des_states_.q(i)-joint_msr_states_.q(i) < -0.001)
-				{
-					 ROS_INFO("joint n°%d -> limit position !!!",i);
-					 ROS_INFO("joint n°%d -> %f !!!",i,joint_des_states_.q(i)-joint_msr_states_.q(i));
-					 ROS_INFO("joint limit of n°%d -> min = %f, max = %f !!!",i,joint_limits_.min(i), joint_limits_.max(i));
-					 joint_handles_[i].setCommand(joint_msr_states_.q(i)-0.001);
-				 }
-				 else
-					joint_handles_[i].setCommand(joint_des_states_.q(i));
-				 
-		}*/
-
+         // set controls for joints
+            for (int i = 0; i < joint_handles_.size(); i++)
+            {
+               joint_handles_[i].setCommand(joint_des_states_.q(i));
+            }
 	//ROS_INFO("***** OneTaskInverseKinematics::update fin ************");
     }
 
