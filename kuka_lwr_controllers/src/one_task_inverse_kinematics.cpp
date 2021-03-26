@@ -91,7 +91,17 @@ namespace kuka_lwr_controllers
 
             // end-effector position error
             x_err_.vel = x_des_.p - x_.p;
-
+            
+            // Limit error velocity
+            /*if (x_err_.vel.x() > 0.25)
+                x_err_.vel.x(0.25);
+                
+            if (x_err_.vel.y() > 0.25)
+                x_err_.vel.y(0.25);
+                
+            if (x_err_.vel.z() > 0.25)
+                x_err_.vel.z(0.25);*/
+                
             // getting quaternion from rotation matrix
             x_.M.GetQuaternion(quat_curr_.v(0),quat_curr_.v(1),quat_curr_.v(2),quat_curr_.a);
             x_des_.M.GetQuaternion(quat_des_.v(0),quat_des_.v(1),quat_des_.v(2),quat_des_.a);
@@ -113,13 +123,22 @@ namespace kuka_lwr_controllers
             {
                 joint_des_states_.qdot(i) = 0.0;
                 for (int k = 0; k < J_pinv_.cols(); k++)
-                    joint_des_states_.qdot(i) += 0.3*J_pinv_(i,k)*x_err_(k); //removed scaling factor of .7
-          
+                    joint_des_states_.qdot(i) += J_pinv_(i,k)*x_err_(k); //removed scaling factor of .7
+                    
             }
+            
+            ROS_INFO_STREAM_THROTTLE(0.5,"cart error: " << x_err_.vel(0) << " " << x_err_.vel(1) << " " << x_err_.vel(2));
+            
 
+            double periodTime = 0.002;
+            
             // integrating q_dot -> getting q (Euler method)
-            for (int i = 0; i < joint_handles_.size(); i++)
-                joint_des_states_.q(i) += 0.002*joint_des_states_.qdot(i);
+            for (int i = 0; i < joint_handles_.size(); i++) {
+                if (joint_des_states_.qdot(i) > 0.1)
+                       joint_des_states_.qdot(i) = 0.1;
+                joint_des_states_.q(i) += periodTime*joint_des_states_.qdot(i);
+                
+            }    
 
             // joint limits saturation
             for (int i =0;  i < joint_handles_.size(); i++)
