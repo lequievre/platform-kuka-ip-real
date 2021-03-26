@@ -33,12 +33,6 @@ namespace kuka_lwr_controllers
         sub_max_velovity_ = nh_.subscribe("setMaxVelocity", 1, &JointPositionController::setMaxVelocityCB, this);
         srv_get_velocity_ = n.advertiseService("get_joint_velocity", &JointPositionController::getCurrentJointVelocity, this);
         
-        v_max_vel_.resize(joint_handles_.size());
-        
-        for (size_t i=0; i<joint_handles_.size(); i++) {
-            v_max_vel_[i] = 0.25;
-         }
-        
         
         realtime_x_pub_.reset(new realtime_tools::RealtimePublisher<geometry_msgs::Pose>(n, "current_x", 4));
         
@@ -64,14 +58,14 @@ namespace kuka_lwr_controllers
        
        joint_cddynamics.reset(new motion::CDDynamics(joint_handles_.size(),1e-6,1));
        
-       motion::Vector velLimits(joint_handles_.size());
+       velLimits_.resize(joint_handles_.size());
+      
       
        for (std::size_t i = 0; i < joint_handles_.size(); i++){
-           velLimits(i)  = v_max_vel_[i]; // x ms^-1
+           velLimits_(i)  = 0.25; // x ms^-1
        }
-       
         
-      joint_cddynamics->SetVelocityLimits(velLimits);
+      joint_cddynamics->SetVelocityLimits(velLimits_);
         
         
         return true;
@@ -97,9 +91,9 @@ namespace kuka_lwr_controllers
 		
 		// Computing current cartesian position by using the forward kinematic solver
         fk_pos_solver_->JntToCart(joint_msr_states_.q, x_);
-		
-		
-        cmd_flag_ = 0;  // set this flag to 0 to not run the update method
+        
+        
+       cmd_flag_ = 0;  // set this flag to 0 to not run the update method
     }
     
     void JointPositionController::stopping(const ros::Time& time)
@@ -131,6 +125,7 @@ namespace kuka_lwr_controllers
 		q_target_ = q_target_buffer_.readFromRT();
 
         //joint_cddynamics->SetDt(period.toSec());
+        joint_cddynamics->SetVelocityLimits(velLimits_);
         joint_cddynamics->SetDt(0.002);
         joint_cddynamics->SetTarget(q_target_->data);
         joint_cddynamics->Update();
@@ -194,8 +189,8 @@ namespace kuka_lwr_controllers
 		
 		for (size_t i=0; i<joint_handles_.size(); ++i)
 		{
-			v_max_vel_[i] = (double)msg->data[i];
-			ROS_INFO("JointPositionController::setMaxVelocityCB Joint[%zu] = %f rad , %f ° !",i, msg->data[i], v_max_vel_[i]);
+			velLimits_(i) = (double)msg->data[i];
+			ROS_INFO("JointPositionController::setMaxVelocityCB Joint[%zu] = %f rad , %f ° !",i, msg->data[i], velLimits_(i));
 		}
 		
 	}
@@ -208,7 +203,7 @@ namespace kuka_lwr_controllers
 		
 		for (size_t i=0; i<joint_handles_.size(); ++i)
 		{
-			resp.arrayVelocities.data[i] = v_max_vel_[i];
+			resp.arrayVelocities.data[i] = velLimits_(i);
 		}
 		
 		return true;

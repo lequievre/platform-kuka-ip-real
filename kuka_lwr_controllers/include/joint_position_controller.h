@@ -83,7 +83,7 @@ namespace kuka_lwr_controllers
 			
 			KDL::Frame x_;		//current pose
 			
-			std::vector<double> v_max_vel_;
+			motion::Vector velLimits_;
 			
 			bool getCurrentJointVelocity(kuka_lwr_controllers::GetJointVelocity::Request& req, kuka_lwr_controllers::GetJointVelocity::Response& resp);
     };

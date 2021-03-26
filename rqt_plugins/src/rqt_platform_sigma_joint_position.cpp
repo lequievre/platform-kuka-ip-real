@@ -130,7 +130,7 @@ namespace platform_sigma_plugins_ns {
 		
 		setupROSComponents_();
 		
-		//resetSlidersVelocity();
+		resetSlidersVelocity();
 		
 		timer_ = new QTimer(this);
 
@@ -372,8 +372,8 @@ namespace platform_sigma_plugins_ns {
 		map_sub_joint_handle_.insert("kuka_lwr_left",getNodeHandle().subscribe(QString("/kuka_lwr_left/").append("joint_states").toStdString(), 100000, &JointPositionPlugin::jsCallback_left_, this));
 		map_sub_joint_handle_.insert("kuka_lwr_right",getNodeHandle().subscribe(QString("/kuka_lwr_right/").append("joint_states").toStdString(), 100000, &JointPositionPlugin::jsCallback_right_, this));
 	
-		map_get_velocity_service_client_.insert("kuka_lwr_left",getNodeHandle().serviceClient<kuka_lwr_controllers::GetJointVelocity>("/kuka_lwr_left/kuka_group_command_controller_fri/get_joint_velocity")); 
-		map_get_velocity_service_client_.insert("kuka_lwr_right",getNodeHandle().serviceClient<kuka_lwr_controllers::GetJointVelocity>("/kuka_lwr_right/kuka_group_command_controller_fri/get_joint_velocity")); 
+		map_get_velocity_service_client_.insert("kuka_lwr_left",getNodeHandle().serviceClient<kuka_lwr_controllers::GetJointVelocity>("/kuka_lwr_left/joint_position_controller/get_joint_velocity")); 
+		map_get_velocity_service_client_.insert("kuka_lwr_right",getNodeHandle().serviceClient<kuka_lwr_controllers::GetJointVelocity>("/kuka_lwr_right/joint_position_controller/get_joint_velocity")); 
 	
 	}
 	
