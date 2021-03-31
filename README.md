@@ -7,3 +7,13 @@ laurent.lequievre@uca.fr<br/>
 ## This was originally forked from CentroEPiaggio/kuka-lwr.
 
 
+### How to start
+
+# start KRL script
+# For the left Arm
+FRIDEMO/IP/FRICONTROLNOTOOL
+
+# For the right Arm
+FRIDEMO/test-laurent/FRIControl
+
+
