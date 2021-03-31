@@ -1,0 +1,162 @@
+http://wiki.ros.org/noetic/Installation/Ubuntu
+
+
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+
+sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+
+sudo apt update
+
+sudo apt install ros-noetic-desktop-full
+
+echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+
+source ~/.bashrc
+
+sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+
+sudo apt install python3-rosdep
+
+sudo rosdep init
+
+rosdep update
+
+
+
+# to get ifconfig command
+sudo apt install net-tools
+
+
+# git
+sudo apt install git
+
+git config --global user.mail "laurent.lequievre@uca.fr"
+git config --global user.name "Laurent LEQUIEVRE"
+
+
+# chrome
+
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install ./google-chrome-stable_current_amd64.deb
+
+
+
+
+# change network interfaces to ethX
+https://www.itzgeek.com/how-tos/mini-howtos/change-default-network-name-ens33-to-old-eth0-on-ubuntu-16-04.html
+
+https://michlstechblog.info/blog/linux-disable-assignment-of-new-names-for-network-interfaces/
+
+sudo nano /etc/default/grub
+
+append net.ifnames=0 biosdevname=0 to GRUB_CMDLINE_LINUX
+
+GRUB_CMDLINE_LINUX="net.ifnames=0 biosdevname=0"
+
+
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+
+
+sudo apt install synaptic
+
+sudo apt install ros-noetic-moveit
+
+sudo apt install ros-noetic-xacro
+
+sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers
+
+
+
+sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-gazebo-ros-control ros-noetic-moveit-ros-control-interface
+
+sudo apt install imagemagick
+
+
+xacro.py is deprecated; please use xacro instead
+<param name="robot_description" command="$(find xacro)/xacro $(arg robot_urdf_file)"/>
+
+
+
+
+
+
+
+src/camera1394/CMakeLists.txt
+-> remove driver_base  in find_package(catkin REQUIRED COMPONENTS ...)
+
+
+compilation FRI
+==============
+
+sudo apt-get install g++-multilib
+
+modification of file :
+build/kuka_lwr_hw/reflexxes-prefix/src/reflexxes/Linux/Makefile.global
+
+line 40 (deplace -gddb by -ggdb)
+DEBUG_CL= g++ $(SYSTEM_LIBS) -ggdb
+
+
+
+
+
+
+
+git 
+====
+
+
+git clone https://github.com/lequievre/platform-sigma.git
+
+git branch -a
+
+git checkout origin/kinetic-devel
+
+
+launch left  arm
+================
+
+sudo -s su
+cd home/kuka/git_project/platform-kuka-ip-real
+source devel/setup.bash 
+
+
+cd home/kuka/git_project/platform-kuka-ip-real/src/scripts_launcher/kuka_lwr
+./lanceur_kuka_arms_left.sh
+
+
+cd /home/kuka/git_project/platform-kuka-ip-real
+source devel/setup.bash
+
+cd /home/kuka/git_project/platform-kuka-ip-real/src/scripts_launcher/kuka_lwr
+
+export ROS_MASTER_URI=http://kuka-Precision-WorkStation-T7500:11311
+./lanceur_position_service.sh start left
+
+
+rostopic pub -1 /kuka_lwr_left/kuka_group_command_controller_fri/command std_msgs/Float64MultiArray "data: [0.0,0.0,0.0,0.0,0.0,0.0,0.0]"
+
+
+
+
+
+
+problem with usb disk
+reinstall ntfs driver
+
+sudo apt install --reinstall ntfs-3g
+
+https://askubuntu.com/questions/500647/unable-to-mount-ntfs-external-hard-drive
+
+sudo ntfsfix /dev/sdb1
+
+
+
+
+
+
+
+
+
+
