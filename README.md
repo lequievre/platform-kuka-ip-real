@@ -9,11 +9,21 @@ laurent.lequievre@uca.fr<br/>
 
 ### How to start
 
-* start KRL script
-- For the left Arm
-FRIDEMO/IP/FRICONTROLNOTOOL
+#### 1- Start the network
+Open a Terminal Window<br/>
 
-- For the right Arm
-FRIDEMO/test-laurent/FRIControl
+cd<br/>
+
+cd Bureau<br/>
+
+./1_start_network.sh<br/>
+
+
+* 2- start KRL script on Kuka KRC computer
+- For the left Arm<br/>
+FRIDEMO/IP/FRICONTROLNOTOOL<br/>
+
+- For the right Arm<br/>
+FRIDEMO/test-laurent/FRIControl<br/>
 
 
