@@ -19,7 +19,7 @@ cd Bureau<br/>
 ./1_start_network.sh<br/>
 
 
-* 2- start KRL script on Kuka KRC computer
+#### 2- Start KRL script on Kuka KRC computer
 - For the left Arm<br/>
 FRIDEMO/IP/FRICONTROLNOTOOL<br/>
 
