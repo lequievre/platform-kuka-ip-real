@@ -9,11 +9,11 @@ laurent.lequievre@uca.fr<br/>
 
 ### How to start
 
-# start KRL script
-# For the left Arm
+* start KRL script
+- For the left Arm
 FRIDEMO/IP/FRICONTROLNOTOOL
 
-# For the right Arm
+- For the right Arm
 FRIDEMO/test-laurent/FRIControl
 
 
