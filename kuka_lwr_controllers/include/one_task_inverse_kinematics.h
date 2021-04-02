@@ -14,9 +14,14 @@
 
 // hardware_interface 
 #include <hardware_interface/joint_command_interface.h> // contains definition of PositionJointInterface
+// hardware_interface 
+#include <kuka_lwr_hw/lwr_kuka_interface.h> // contains definition of KUKAJointInterface
 
 // Ros messages generated
 #include <kuka_lwr_controllers/PoseRPY.h>
+
+// msgs Float64MultiArray
+#include <std_msgs/Float64MultiArray.h>
 
 // realtime tools
 #include <realtime_tools/realtime_buffer.h>
@@ -29,13 +34,13 @@
 namespace kuka_lwr_controllers
 {
 	class OneTaskInverseKinematics: 
-	public controller_interface::KinematicChainControllerBase<hardware_interface::PositionJointInterface>
+	public controller_interface::KinematicChainControllerBase<hardware_interface::KUKAJointInterface>
 	{
 		public:
 			OneTaskInverseKinematics();
 			~OneTaskInverseKinematics();
 
-			bool init(hardware_interface::PositionJointInterface *robot, ros::NodeHandle &n);
+			bool init(hardware_interface::KUKAJointInterface *robot, ros::NodeHandle &n);
 			void starting(const ros::Time& time);
 			void update(const ros::Time& time, const ros::Duration& period);
 			void command(const kuka_lwr_controllers::PoseRPY::ConstPtr &msg);
@@ -45,7 +50,7 @@ namespace kuka_lwr_controllers
 		    std::shared_ptr<realtime_tools::RealtimePublisher<geometry_msgs::Pose> > realtime_x_pub_; // real time publisher to publish current cartesian position and orientation
 		    
 			ros::Subscriber sub_command_;
-			ros::Subscriber sub_gains_;
+			ros::Subscriber sub_damping_, sub_stiffness_;
 
 			KDL::Frame x_;		//current pose
 			KDL::Frame x_des_;	//desired pose
@@ -73,6 +78,13 @@ namespace kuka_lwr_controllers
 			boost::scoped_ptr<KDL::ChainFkSolverPos_recursive> fk_pos_solver_;
 			boost::scoped_ptr<KDL::ChainIkSolverVel_pinv> ik_vel_solver_;
 			boost::scoped_ptr<KDL::ChainIkSolverPos_NR_JL> ik_pos_solver_;
+			
+			void setDamping(const std_msgs::Float64MultiArrayConstPtr& msg); // function associate to a subscribe setDamping topic
+			void setStiffness(const std_msgs::Float64MultiArrayConstPtr& msg); // function associate to a subscribe setStiffness topic
+			
+			KDL::JntArray damping_, stiffness_;
+			
+			std::string robot_namespace_;
 
 
 	};
