@@ -12,11 +12,13 @@ namespace kuka_lwr_controllers
     OneTaskInverseKinematics::OneTaskInverseKinematics() {}
     OneTaskInverseKinematics::~OneTaskInverseKinematics() {}
 
-    bool OneTaskInverseKinematics::init(hardware_interface::PositionJointInterface *robot, ros::NodeHandle &n)
+    bool OneTaskInverseKinematics::init(hardware_interface::KUKAJointInterface *robot, ros::NodeHandle &n)
     {
 		ROS_INFO("***** START OneTaskInverseKinematics::init ************");
+		
+		robot_namespace_ = n.getNamespace();
 
-        if( !(KinematicChainControllerBase<hardware_interface::PositionJointInterface>::init(robot, n)) )
+        if( !(KinematicChainControllerBase<hardware_interface::KUKAJointInterface>::init(robot, n)) )
         {
             ROS_ERROR("Couldn't initilize OneTaskInverseKinematics controller.");
             return false;
@@ -48,8 +50,14 @@ namespace kuka_lwr_controllers
 
         sub_command_ = nh_.subscribe("command", 1, &OneTaskInverseKinematics::command, this);
         
+        sub_damping_ = n.subscribe("setDamping", 1, &OneTaskInverseKinematics::setDamping, this);
+        sub_stiffness_ = n.subscribe("setStiffness", 1, &OneTaskInverseKinematics::setStiffness, this);
+        
         // current cartesian publisher
 		realtime_x_pub_.reset(new realtime_tools::RealtimePublisher<geometry_msgs::Pose>(n, "current_x", 4));
+		
+		damping_.resize(joint_handles_.size());
+		stiffness_.resize(joint_handles_.size());
         
         ROS_INFO("***** FINISH OneTaskInverseKinematics::init ************");
 
@@ -66,6 +74,22 @@ namespace kuka_lwr_controllers
             
                joint_des_states_.q(i) = joint_handles_[i].getPosition();
             }
+            
+        for (std::size_t i=0; i<joint_handles_.size(); i++)
+		{
+			damping_(i) = 0.8;
+		}
+		
+		
+		for (std::size_t i=0; i<joint_handles_.size()-3; i++)
+		{
+			stiffness_(i) = 800.0;
+		}
+		
+		for (std::size_t i=4; i<joint_handles_.size(); i++)
+		{
+			stiffness_(i) = 50.0;
+		}
     }
 
     void OneTaskInverseKinematics::update(const ros::Time& time, const ros::Duration& period)
@@ -123,7 +147,7 @@ namespace kuka_lwr_controllers
             {
                 joint_des_states_.qdot(i) = 0.0;
                 for (int k = 0; k < J_pinv_.cols(); k++)
-                    joint_des_states_.qdot(i) += J_pinv_(i,k)*x_err_(k); //removed scaling factor of .7
+                    joint_des_states_.qdot(i) += 0.7*J_pinv_(i,k)*x_err_(k); //removed scaling factor of .7
                     
             }
             
@@ -134,8 +158,8 @@ namespace kuka_lwr_controllers
             
             // integrating q_dot -> getting q (Euler method)
             for (int i = 0; i < joint_handles_.size(); i++) {
-                if (joint_des_states_.qdot(i) > 0.1)
-                       joint_des_states_.qdot(i) = 0.1;
+                //if (joint_des_states_.qdot(i) > 0.1)
+                       //joint_des_states_.qdot(i) = 0.1;
                 joint_des_states_.q(i) += periodTime*joint_des_states_.qdot(i);
                 
             }    
@@ -149,7 +173,7 @@ namespace kuka_lwr_controllers
                     joint_des_states_.q(i) = joint_limits_.max(i);
             }
 
-            if (Equal(x_, x_des_, 0.005))
+            if (Equal(x_, x_des_, 0.01))
             {
                 ROS_INFO("On target");
                 cmd_flag_ = 0;
@@ -177,7 +201,10 @@ namespace kuka_lwr_controllers
          // set controls for joints
             for (int i = 0; i < joint_handles_.size(); i++)
             {
-               joint_handles_[i].setCommand(joint_des_states_.q(i));
+               joint_handles_[i].setCommandPosition(joint_des_states_.q(i));
+               joint_handles_[i].setCommandTorque(0.0);
+               joint_handles_[i].setCommandStiffness(stiffness_(i));
+			   joint_handles_[i].setCommandDamping(damping_(i));
             }
 	//ROS_INFO("***** OneTaskInverseKinematics::update fin ************");
     }
@@ -228,6 +255,56 @@ namespace kuka_lwr_controllers
         
         ROS_INFO("***** FINISH OneTaskInverseKinematics::command ************");
     }
+    
+    void OneTaskInverseKinematics::setDamping(const std_msgs::Float64MultiArrayConstPtr& msg)
+    {
+		#if TRACE_Torque_Based_Position_ACTIVATED
+			ROS_INFO("OneTaskInverseKinematics: Start setDamping of robot %s!",robot_namespace_.c_str());
+		#endif
+
+		if(msg->data.size()!=joint_handles_.size())
+		{ 
+			ROS_ERROR_STREAM("OneTaskInverseKinematics: setDamping Dimension (of robot " << robot_namespace_.c_str() << ") of command (" << msg->data.size() << ") does not match number of joints (" << joint_handles_.size() << ")! Not executing!");
+			return; 
+		}
+		
+		damping_.resize(joint_handles_.size());
+		for (std::size_t i=0; i<msg->data.size(); i++)
+		{
+			damping_(i) = (double)msg->data[i];
+		}
+		
+	}
+	
+	
+	void OneTaskInverseKinematics::setStiffness(const std_msgs::Float64MultiArrayConstPtr& msg)
+    {
+		#if TRACE_Torque_Based_Position_ACTIVATED
+			ROS_INFO("OneTaskInverseKinematics: Start setStiffness of robot %s!",robot_namespace_.c_str());
+		#endif
+
+		if(msg->data.size()!=joint_handles_.size())
+		{ 
+			ROS_ERROR_STREAM("OneTaskInverseKinematics: setStiffness Dimension (of robot " << robot_namespace_.c_str() << ") of command (" << msg->data.size() << ") does not match number of joints (" << joint_handles_.size() << ")! Not executing!");
+			return; 
+		}
+		
+		stiffness_.resize(joint_handles_.size());
+		for (std::size_t i=0; i<msg->data.size(); i++)
+		{
+			stiffness_(i) = (double)msg->data[i];
+		}
+		
+		for (std::size_t i=0; i<msg->data.size(); i++)
+		{
+			std::cout << stiffness_(i) << std::endl;
+		}
+		
+		
+		
+	}
+    
+    
 
 }
 
