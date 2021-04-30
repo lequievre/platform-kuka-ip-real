@@ -293,6 +293,19 @@ rostopic pub -1 /kuka_lwr_right/kuka_simple_cartesian_impedance_controller/setCa
  
 
 
+Set IP Address of a KRC
+=======================
+
+edit file C:\WINDOWS\VXWIN.INI
+
+[Boot]
+Bootline=ece(0,1)pc:vxworks ...... e=192.168.100.254 ...
+
+Where are FRI informations
+==========================
+
+c:\krc\ROBOTER\INIT\Dlrrc.ini
+
 
 
 
