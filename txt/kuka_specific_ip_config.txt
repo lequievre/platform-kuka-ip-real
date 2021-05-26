@@ -1,0 +1,36 @@
+In C:\KRC\Roboter\INIT\dlrrc.ini set a static IP for the remote computer that is connected to the controller.
+
+Kuka controller Right :
+=======================
+[DLRRC]
+
+
+IMMEDIATE_STARTUP=1
+FRIHOST=192.168.100.120
+FRISOCK=49938.0
+FRIKEY=XXXXXXXXXXXX
+
+
+
+kuka controller Left :
+======================
+
+[DLRRC]
+
+
+IMMEDIATE_STARTUP=1
+FRIHOST=192.168.100.102
+FRISOCK=49939.0
+FRIKEY=XXXXXXXXXXXX
+
+
+
+In C:\Windows\vxwin.ini set the IP address of the Kuka controller :
+
+ip_address_kuka_right="192.168.100.253"
+ip_address_kuka_left="192.168.100.254"
+
+not sure but something like this for the kuka controller right :
+================================================================
+[Boot]
+Bootline=elPci(0,1)pc:vxworks h=192.0.1.2 b=192.0.1.1 e=192.168.100.253 u=target pw=vxworks
